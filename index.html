@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ko-KR">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My-Note</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <main>
+        <section class="input-memo">
+            <label for="title"></label>
+            <input type="text" name="" id="title" />
+            <textarea name="" id="content" cols="30" rows="10"></textarea>
+            <button type="button" onclick="saveNote()">입력 완료</button>
+        </section>
+        <section id="display">영화리스트</section>
+    </main>
+    <script>
+        let allMemo = JSON.parse(localStorage.getItem("allMemo"));
+        allMemo = allMemo ?? [];
+
+        render();
+
+        // 입력한 메모를 저장하기
+        function saveNote() {
+            const title = document.getElementById("title").value;
+            const content = document.getElementById("content").value;
+            
+            allMemo.push({ title, content, len: allMemo.length });
+            
+            localStorage.setItem("allMemo", JSON.stringify(allMemo));
+            render();
+        }
+
+        // 저장한 메모 출력하기
+        function render(){
+            const display = document.getElementById("display");
+            display.innerHTML = "";
+
+            for(const item of allMemo){
+                const saveTitle = document.createElement("h2");
+                const saveContent = document.createElement("div");
+                const saveCount = document.createElement("p");
+                const deleteBtn = document.createElement("button");
+
+                saveTitle.textContent = item.title;
+                saveContent.textContent = item.content;
+                saveCount.textContent = item.len + 1;
+
+                deleteBtn.textContent = "삭제";
+                deleteBtn.setAttribute("id", item.len);
+                deleteBtn.setAttribute("onclick", "remove()");
+
+                saveCount.style.borderTop = "1px solid #000";
+                saveCount.style.paddingTop = "10px"
+                display.appendChild(saveCount);
+                display.appendChild(saveTitle);
+                display.appendChild(saveContent);
+                display.appendChild(deleteBtn);
+                deleteBtn.style.marginBottom = "20px";
+            }
+        }
+
+        // 메모 삭제하기
+        function remove(){
+            const idx = allMemo.find(
+                (item)=> item.len == event.target.id
+            );
+            if(idx){
+                allMemo.splice(
+                    allMemo.findIndex((item) => item.len == idx.len), 1
+                );
+            }
+            localStorage.setItem("allMemo", JSON.stringify(allMemo));
+            render();
+        }
+    </script>
+</body>
+</html>
