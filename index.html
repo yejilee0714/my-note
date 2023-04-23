@@ -1,81 +1,97 @@
 <!DOCTYPE html>
 <html lang="ko-KR">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My-Note</title>
+    <title>메모장</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-    <main>
-        <section class="input-memo">
+    <div class="container">
+        <section class="text-add">
+            <h1>메모장</h1>
             <label for="title"></label>
-            <input type="text" name="" id="title" />
-            <textarea name="" id="content" cols="30" rows="10"></textarea>
-            <button type="button" onclick="saveNote()">입력 완료</button>
+            <input type="text" name="" id="title" placeholder="제목을 입력하세요"/>
+            <textarea id="memo" placeholder="메모를 입력하세요"></textarea>
+            <button id="save">저장</button>
         </section>
-        <section id="display">영화리스트</section>
-    </main>
+        <section class="text-list">
+            <div id="output"></div>
+        </section>
+    </div>
     <script>
-        let allMemo = JSON.parse(localStorage.getItem("allMemo"));
-        allMemo = allMemo ?? [];
+        const memoList = JSON.parse(localStorage.getItem("memoList")) || [];
 
-        render();
-
-        // 입력한 메모를 저장하기
-        function saveNote() {
+        function saveMemo() {
             const title = document.getElementById("title").value;
-            const content = document.getElementById("content").value;
-            
-            allMemo.push({ title, content, len: allMemo.length });
-            
-            localStorage.setItem("allMemo", JSON.stringify(allMemo));
-            render();
-        }
+            const memo = document.getElementById("memo").value;
 
-        // 저장한 메모 출력하기
-        function render(){
-            const display = document.getElementById("display");
-            display.innerHTML = "";
-
-            for(const item of allMemo){
-                const saveTitle = document.createElement("h2");
-                const saveContent = document.createElement("div");
-                const saveCount = document.createElement("p");
-                const deleteBtn = document.createElement("button");
-
-                saveTitle.textContent = item.title;
-                saveContent.textContent = item.content;
-                saveCount.textContent = item.len + 1;
-
-                deleteBtn.textContent = "삭제";
-                deleteBtn.setAttribute("id", item.len);
-                deleteBtn.setAttribute("onclick", "remove()");
-
-                saveCount.style.borderTop = "1px solid #000";
-                saveCount.style.paddingTop = "10px"
-                display.appendChild(saveCount);
-                display.appendChild(saveTitle);
-                display.appendChild(saveContent);
-                display.appendChild(deleteBtn);
-                deleteBtn.style.marginBottom = "20px";
+            if (title.trim() === "") {
+                alert("제목 내용을 입력하세요.");
+                return;
             }
+            
+            if (memo.trim() === "") {
+                alert("메모 내용을 입력하세요.");
+                return;
+            }
+
+            memoList.push({title, memo});
+            localStorage.setItem("memoList", JSON.stringify(memoList));
+
+            displayMemoList();
+            document.getElementById("title").value = "";
+            document.getElementById("memo").value = "";
         }
 
-        // 메모 삭제하기
-        function remove(){
-            const idx = allMemo.find(
-                (item)=> item.len == event.target.id
-            );
-            if(idx){
-                allMemo.splice(
-                    allMemo.findIndex((item) => item.len == idx.len), 1
-                );
-            }
-            localStorage.setItem("allMemo", JSON.stringify(allMemo));
-            render();
+        function displayMemoList() {
+            const outputDiv = document.getElementById("output");
+            outputDiv.innerHTML = "";
+
+            memoList.forEach((memoList, index) => {
+                const memoDiv = document.createElement("div");
+                memoDiv.className = "memo-item";
+
+                let memoCount = document.createElement("p");
+                memoCount.textContent = index + 1;
+
+                const memoTitle = document.createElement("h2");
+                memoTitle.textContent = memoList.title;
+
+                const memoText = document.createElement("span");
+                memoText.textContent = memoList.memo;
+
+                const deleteButton = document.createElement("button");
+                deleteButton.textContent = "삭제";
+                deleteButton.addEventListener("click", () => deleteMemo(index));
+
+                memoDiv.style.display = "flex";
+                memoDiv.style.flexDirection = "column";
+                memoDiv.style.background = "#f8f9fa";
+                memoDiv.style.marginBottom = "20px";
+                memoDiv.style.padding = "0px 10px 10px";
+
+                memoDiv.appendChild(memoCount);
+                memoDiv.appendChild(memoTitle);
+                memoDiv.appendChild(memoText);
+                memoDiv.appendChild(deleteButton);
+                outputDiv.appendChild(memoDiv);
+            });
         }
+
+        function deleteMemo(index) {
+            memoList.splice(index, 1);
+            localStorage.setItem("memoList", JSON.stringify(memoList));
+            displayMemoList();
+        }
+
+        document.getElementById("save").addEventListener("click", saveMemo);
+        displayMemoList();
+
     </script>
 </body>
+
 </html>
