@@ -38,8 +38,10 @@
                 alert("메모 내용을 입력하세요.");
                 return;
             }
-
-            memoList.push({title, memo});
+            
+            const now = new Date();
+            const timestamp = now.toLocaleString("ko-KR");
+            memoList.push({title, memo, timestamp});
             localStorage.setItem("memoList", JSON.stringify(memoList));
 
             displayMemoList();
@@ -64,6 +66,9 @@
                 const memoText = document.createElement("span");
                 memoText.textContent = memoList.memo;
 
+                const memoDate = document.createElement("span");
+                memoDate.textContent = memoList.timestamp;
+
                 const deleteButton = document.createElement("button");
                 deleteButton.textContent = "삭제";
                 deleteButton.addEventListener("click", () => deleteMemo(index));
@@ -73,11 +78,15 @@
                 memoDiv.style.background = "#f8f9fa";
                 memoDiv.style.marginBottom = "20px";
                 memoDiv.style.padding = "0px 10px 10px";
-                deleteButton.style.width = "100%"
+                memoDiv.style.borderRadius = "10px";
+                memoDate.style.marginTop = "5px"
+                memoDate.style.textAlign = "right"
+                deleteButton.style.width = "100%";
 
                 memoDiv.appendChild(memoCount);
                 memoDiv.appendChild(memoTitle);
                 memoDiv.appendChild(memoText);
+                memoDiv.appendChild(memoDate);
                 memoDiv.appendChild(deleteButton);
                 outputDiv.appendChild(memoDiv);
             });
