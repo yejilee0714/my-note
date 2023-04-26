@@ -74,10 +74,12 @@
                 const editButton = document.createElement("button");
                 editButton.textContent = "수정";
                 editButton.addEventListener("click", () => editMemo(index));
+                editButton.style.width = "100%";
 
                 const deleteButton = document.createElement("button");
                 deleteButton.textContent = "삭제";
                 deleteButton.addEventListener("click", () => deleteMemo(index));
+                deleteButton.style.width = "100%";
 
                 memoDiv.style.display = "flex";
                 memoDiv.style.flexDirection = "column";
