@@ -14,7 +14,7 @@
         <section class="text-add">
             <h1>메모장</h1>
             <label for="title"></label>
-            <input type="text" name="" id="title" placeholder="제목을 입력하세요"/>
+            <input type="text" name="" id="title" placeholder="제목을 입력하세요" />
             <textarea id="memo" placeholder="메모를 입력하세요"></textarea>
             <button id="save">저장</button>
         </section>
@@ -33,15 +33,15 @@
                 alert("제목 내용을 입력하세요.");
                 return;
             }
-            
+
             if (memo.trim() === "") {
                 alert("메모 내용을 입력하세요.");
                 return;
             }
-            
+
             const now = new Date();
             const timestamp = now.toLocaleString("ko-KR");
-            memoList.push({title, memo, timestamp});
+            memoList.push({ title, memo, timestamp });
             localStorage.setItem("memoList", JSON.stringify(memoList));
 
             displayMemoList();
@@ -59,15 +59,21 @@
 
                 let memoCount = document.createElement("p");
                 memoCount.textContent = index + 1;
+                memoCount.style.fontSize = "22px";
 
                 const memoTitle = document.createElement("h2");
                 memoTitle.textContent = memoList.title;
 
                 const memoText = document.createElement("span");
                 memoText.textContent = memoList.memo;
+                memoText.style.lineHeight = "20px";
 
                 const memoDate = document.createElement("span");
                 memoDate.textContent = memoList.timestamp;
+
+                const editButton = document.createElement("button");
+                editButton.textContent = "수정";
+                editButton.addEventListener("click", () => editMemo(index));
 
                 const deleteButton = document.createElement("button");
                 deleteButton.textContent = "삭제";
@@ -79,17 +85,46 @@
                 memoDiv.style.marginBottom = "20px";
                 memoDiv.style.padding = "0px 10px 10px";
                 memoDiv.style.borderRadius = "10px";
+
                 memoDate.style.marginTop = "5px"
                 memoDate.style.textAlign = "right"
-                deleteButton.style.width = "100%";
 
                 memoDiv.appendChild(memoCount);
                 memoDiv.appendChild(memoTitle);
                 memoDiv.appendChild(memoText);
                 memoDiv.appendChild(memoDate);
+                memoDiv.appendChild(editButton);
                 memoDiv.appendChild(deleteButton);
                 outputDiv.appendChild(memoDiv);
             });
+        }
+
+        function editMemo(index) {
+            const memoItem = memoList[index];
+            const memoTitle = memoItem.title;
+            const memoText = memoItem.memo;
+            const memoDate = memoItem.timestamp;
+
+            const newMemoTitle = prompt("새로운 제목을 입력하세요.", memoTitle);
+            if (newMemoTitle === null) {
+                return;
+            }
+
+            const newMemoText = prompt("새로운 메모를 입력하세요.", memoText);
+            if (newMemoText === null) {
+                return;
+            }
+
+            const now = new Date();
+            const newMemoDate = now.toLocaleString("ko-KR");
+
+            memoList[index] = {
+                title: newMemoTitle,
+                memo: newMemoText,
+                timestamp: newMemoDate,
+            };
+            localStorage.setItem("memoList", JSON.stringify(memoList));
+            displayMemoList();
         }
 
         function deleteMemo(index) {
